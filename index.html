@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>時區換算器：台北 ↔ 太平洋</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #000005;
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    /* Rotating galaxy background */
+    .rotating-galaxy {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 140vmax;
+      height: 140vmax;
+      background: 
+        radial-gradient(ellipse at center, rgba(74, 25, 122, 0.4) 0%, transparent 65%),
+        radial-gradient(ellipse at center, rgba(25, 10, 80, 0.4) 0%, transparent 40%);
+      opacity: 0.7;
+      z-index: -3;
+      border-radius: 50%;
+      box-shadow: 
+        inset 0 0 50px rgba(130, 90, 255, 0.5),
+        inset 0 0 100px rgba(60, 10, 120, 0.3);
+      animation: rotateGalaxy 240s linear infinite;
+    }
+    
+    .galaxy-arms {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        conic-gradient(
+          from 0deg, 
+          transparent 0deg, 
+          rgba(80, 40, 190, 0.15) 60deg, 
+          rgba(120, 70, 220, 0.3) 80deg, 
+          transparent 160deg,
+          rgba(80, 40, 190, 0.15) 240deg, 
+          rgba(120, 70, 220, 0.3) 260deg, 
+          transparent 340deg
+        );
+      border-radius: 50%;
+      filter: blur(20px);
+      transform: scale(0.8);
+      animation: rotateArms 240s linear infinite;
+    }
+    
+    .galaxy-stars {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: radial-gradient(
+        white 1px, 
+        transparent 1px
+      );
+      background-size: 15px 15px;
+      border-radius: 50%;
+      opacity: 0.2;
+      animation: rotateStars 240s linear infinite reverse;
+    }
+    
+    @keyframes rotateGalaxy {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+    
+    @keyframes rotateArms {
+      0% { transform: scale(0.8) rotate(0deg); }
+      100% { transform: scale(0.8) rotate(360deg); }
+    }
+    
+    @keyframes rotateStars {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Galaxy background - static */
+    .galaxy {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(
+        ellipse at center,
+        transparent 0%,
+        rgba(25, 0, 50, 0.2) 40%,
+        rgba(6, 0, 32, 0.6) 70%
+      );
+      z-index: -2;
+      opacity: 0.5;
+    }
+    
+    .galaxy::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(ellipse at 25% 25%, rgba(90, 0, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 75% 60%, rgba(60, 10, 180, 0.15) 0%, transparent 60%),
+        radial-gradient(ellipse at 45% 85%, rgba(120, 0, 255, 0.1) 0%, transparent 40%),
+        radial-gradient(ellipse at 80% 20%, rgba(80, 0, 180, 0.1) 0%, transparent 50%);
+      filter: blur(20px);
+      opacity: 0.8;
+    }
+
+    /* Static stars background */
+    .stars {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+    }
+    
+    /* First star layer - small stars */
+    .stars::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      box-shadow: 
+        0 0 1px #fff,
+        2vw 3vh 1px #fff, 
+        4vw 20vh 1px #fff, 
+        8vw 13vh 1px #fff, 
+        10vw 35vh 1px #fff, 
+        15vw 5vh 1px #fff, 
+        18vw 25vh 1px #fff, 
+        20vw 16vh 1px #fff, 
+        22vw 32vh 1px #fff, 
+        28vw 7vh 1px #fff, 
+        30vw 28vh 1px #fff, 
+        35vw 17vh 1px #fff, 
+        38vw 35vh 1px #fff, 
+        42vw 9vh 1px #fff, 
+        45vw 27vh 1px #fff, 
+        48vw 10vh 1px #fff, 
+        50vw 40vh 1px #fff, 
+        55vw 8vh 1px #fff, 
+        58vw 30vh 1px #fff, 
+        65vw 20vh 1px #fff, 
+        70vw 38vh 1px #fff, 
+        75vw 12vh 1px #fff, 
+        80vw 25vh 1px #fff, 
+        85vw 7vh 1px #fff, 
+        88vw 38vh 1px #fff, 
+        92vw 5vh 1px #fff, 
+        95vw 28vh 1px #fff;
+      animation: twinkle 8s linear infinite alternate;
+    }
+    
+    /* Second star layer - medium stars */
+    .stars::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      box-shadow: 
+        1vw 15vh 2px rgba(255, 255, 255, 0.9), 
+        5vw 30vh 2px rgba(255, 255, 255, 0.9), 
+        12vw 8vh 2px rgba(255, 255, 255, 0.9), 
+        19vw 38vh 2px rgba(255, 255, 255, 0.9), 
+        25vw 22vh 2px rgba(255, 255, 255, 0.9), 
+        32vw 5vh 2px rgba(255, 255, 255, 0.9), 
+        40vw 20vh 2px rgba(255, 255, 255, 0.9), 
+        48vw 32vh 2px rgba(255, 255, 255, 0.9), 
+        60vw 15vh 2px rgba(255, 255, 255, 0.9), 
+        70vw 35vh 2px rgba(255, 255, 255, 0.9), 
+        78vw 5vh 2px rgba(255, 255, 255, 0.9), 
+        92vw 25vh 2px rgba(255, 255, 255, 0.9);
+      animation: twinkle 10s linear infinite;
+    }
+    
+    /* Star twinkling animation only (no movement) */
+    @keyframes twinkle {
+      0% {
+        opacity: 0.7;
+      }
+      50% {
+        opacity: 0.3;
+      }
+      100% {
+        opacity: 0.7;
+      }
+    }
+    
+    /* Large stars with glow - static */
+    .large-stars {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    
+    .large-star {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      filter: blur(1px);
+      animation: glow 3s ease-in-out infinite alternate;
+    }
+    
+    @keyframes glow {
+      0% {
+        box-shadow: 0 0 4px 2px rgba(255, 255, 255, 0.3);
+      }
+      100% {
+        box-shadow: 0 0 8px 4px rgba(255, 255, 255, 0.6);
+      }
+    }
+
+    .container {
+      max-width: 650px;
+      margin: 100px auto;
+      background: rgba(0, 0, 64, 0.6);
+      padding: 2.5rem;
+      border-radius: 20px;
+      box-shadow: 0 0 30px rgba(173,216,230, 0.3);
+    }
+
+    .current-time {
+      text-align: center;
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+      padding: 0.8rem;
+      background: rgba(0, 0, 100, 0.4);
+      border-radius: 10px;
+      border: 1px solid rgba(100, 149, 237, 0.3);
+      box-shadow: 0 0 15px rgba(100, 149, 237, 0.2);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 2rem;
+      color: #90caf9;
+    }
+
+    /* Improved input styles - simplified */
+    .input-group {
+      margin-bottom: 2rem;
+    }
+    
+    .input-group label {
+      display: block;
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+      color: #90caf9;
+    }
+    
+    /* Date picker styling - brighter version */
+    input[type="datetime-local"] {
+      width: 100%;
+      padding: 1rem;
+      border-radius: 10px;
+      border: none;
+      background: #1e4483; /* Brighter blue background */
+      color: #fff;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 0 15px rgba(100, 180, 255, 0.3);
+      margin-bottom: 8px;
+      border: 1px solid rgba(100, 180, 255, 0.3);
+    }
+    
+    input[type="datetime-local"]:hover,
+    input[type="datetime-local"]:focus {
+      background: #2a5db0; /* Even brighter when hovered */
+      box-shadow: 0 0 18px rgba(100, 180, 255, 0.6);
+      border-color: rgba(150, 200, 255, 0.6);
+    }
+    
+    /* Calendar icon styling (webkit browsers) */
+    input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+      filter: invert(1) brightness(1.8) opacity(0.8);
+      cursor: pointer;
+    }
+    
+    /* Button group with better spacing */
+    .button-group {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      margin: 25px 0;
+    }
+
+    button {
+      width: 48%;
+      padding: 1rem;
+      font-size: 1.3rem;
+      background: #1e88e5;
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    button:hover {
+      background: #42a5f5;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    button:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .result {
+      margin-top: 1.5rem;
+      font-size: 1.4rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="rotating-galaxy">
+    <div class="galaxy-arms"></div>
+    <div class="galaxy-stars"></div>
+  </div>
+  <div class="galaxy"></div>
+  <div class="stars"></div>
+  <div class="large-stars" id="large-stars"></div>
+  <div class="container">
+    <div class="current-time" id="current-time">正在載入時間...</div>
+    <h1>🪐 台北與太平洋時間換算器 🌌</h1>
+    
+    <div class="input-group">
+      <label for="taipei-time">台北時間（UTC+8）</label>
+      <input type="datetime-local" id="taipei-time">
+    </div>
+
+    <div class="input-group">
+      <label for="pacific-time">太平洋時間（UTC-7 or -8）</label>
+      <input type="datetime-local" id="pacific-time">
+    </div>
+
+    <div class="button-group">
+      <button onclick="convert('toPacific')">台北 → 太平洋</button>
+      <button onclick="convert('toTaipei')">太平洋 → 台北</button>
+    </div>
+
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    // 創建大星星的函數 - 靜態版本
+    function createLargeStars() {
+      const starsContainer = document.getElementById('large-stars');
+      starsContainer.innerHTML = ''; // 清空現有星星
+      const starCount = 20;
+      
+      for (let i = 0; i < starCount; i++) {
+        const star = document.createElement('div');
+        star.className = 'large-star';
+        
+        // 隨機大小 (1-4px)
+        const size = Math.random() * 3 + 1;
+        star.style.width = `${size}px`;
+        star.style.height = `${size}px`;
+        
+        // 隨機位置
+        star.style.left = `${Math.random() * 100}vw`;
+        star.style.top = `${Math.random() * 100}vh`;
+        
+        // 隨機動畫延遲
+        star.style.animationDelay = `${Math.random() * 5}s`;
+        
+        starsContainer.appendChild(star);
+      }
+    }
+    
+    // 更新即時時間的函數
+    function updateCurrentTime() {
+      const now = new Date();
+      const options = { 
+        year: 'numeric', 
+        month: '2-digit', 
+        day: '2-digit', 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit',
+        hour12: false
+      };
+      
+      // 台北時間
+      const taipeiTimeStr = now.toLocaleString('zh-TW', { 
+        ...options, 
+        timeZone: 'Asia/Taipei' 
+      });
+      
+      // 太平洋時間
+      const pacificTimeStr = now.toLocaleString('en-US', { 
+        ...options, 
+        timeZone: 'America/Los_Angeles' 
+      });
+      
+      // 顯示兩個時區的時間
+      document.getElementById('current-time').innerHTML = 
+        `🌏 台北時間: ${taipeiTimeStr}<br>` +
+        `🌎 太平洋時間: ${pacificTimeStr}`;
+    }
+    
+    // 網頁載入時設置初始時間
+    window.onload = () => {
+      // 創建靜態星空背景
+      createLargeStars();
+      
+      // 立即更新一次時間
+      updateCurrentTime();
+      
+      // 設置每秒更新一次時間
+      setInterval(updateCurrentTime, 1000);
+      
+      // 設定初始時間為現在的台北時間
+      const now = new Date();
+      const tzOffset = now.getTimezoneOffset();
+      const utcTime = new Date(now.getTime() + tzOffset * 60000);
+      const taipeiTime = new Date(utcTime.getTime() + 8 * 60 * 60000);
+
+      const iso = taipeiTime.toISOString().slice(0, 16);
+      document.getElementById('taipei-time').value = iso;
+    }
+
+    function convert(direction) {
+      const taipeiInput = document.getElementById('taipei-time').value;
+      const pacificInput = document.getElementById('pacific-time').value;
+      const resultBox = document.getElementById('result');
+
+      try {
+        let result;
+        
+        // 判斷是否在太平洋時間為夏令時 (PDT)
+        function isPDT(date) {
+          // 獲取該日期在洛杉磯時區的表示
+          const options = { timeZoneName: 'short' };
+          const tzString = date.toLocaleString('en-US', { timeZone: 'America/Los_Angeles', ...options });
+          return tzString.includes('PDT');
+        }
+
+        if (direction === 'toPacific' && taipeiInput) {
+          // 台北 -> 太平洋 轉換
+          const taipeiDate = new Date(taipeiInput);
+          
+          // 將台北時間轉換為 UTC 時間
+          // 台北是 UTC+8，所以我們減去 8 小時來獲得 UTC
+          const utcDate = new Date(taipeiDate);
+          utcDate.setTime(utcDate.getTime() - (8 * 60 * 60000));
+          
+          // 將 UTC 時間轉換為太平洋時間
+          const pacificDate = new Date(utcDate);
+          
+          // 檢測是 PDT (-7) 還是 PST (-8)
+          const isPacificDST = isPDT(taipeiDate);
+          const pacificOffset = isPacificDST ? -7 : -8;
+          
+          // 調整為太平洋時間
+          pacificDate.setTime(utcDate.getTime() + (pacificOffset * 60 * 60000));
+          
+          // 顯示結果
+          const tzName = isPacificDST ? 'PDT' : 'PST';
+          const options = { 
+            year: 'numeric', 
+            month: '2-digit', 
+            day: '2-digit', 
+            hour: '2-digit', 
+            minute: '2-digit',
+            hour12: false
+          };
+          
+          result = `🌎 太平洋時間 (${tzName})：${pacificDate.toLocaleString('en-US', options)}`;
+          
+          // 更新輸入欄位
+          document.getElementById('pacific-time').value = pacificDate.toISOString().slice(0, 16);
+        } 
+        else if (direction === 'toTaipei' && pacificInput) {
+          // 太平洋 -> 台北 轉換
+          const pacificDate = new Date(pacificInput);
+          
+          // 將太平洋時間轉換為 UTC 時間
+          const utcDate = new Date(pacificDate);
+          
+          // 檢測是 PDT (-7) 還是 PST (-8)
+          const isPacificDST = isPDT(pacificDate);
+          const pacificOffset = isPacificDST ? -7 : -8;
+          
+          // 調整為 UTC 時間（太平洋時間 + 偏移量）
+          utcDate.setTime(pacificDate.getTime() - (pacificOffset * 60 * 60000));
+          
+          // 將 UTC 時間轉換為台北時間（UTC + 8小時）
+          const taipeiDate = new Date(utcDate);
+          taipeiDate.setTime(utcDate.getTime() + (8 * 60 * 60000));
+          
+          // 顯示結果
+          const options = { 
+            year: 'numeric', 
+            month: '2-digit', 
+            day: '2-digit', 
+            hour: '2-digit', 
+            minute: '2-digit',
+            hour12: false
+          };
+          
+          result = `🌏 台北時間：${taipeiDate.toLocaleString('zh-TW', options)}`;
+          
+          // 更新輸入欄位
+          document.getElementById('taipei-time').value = taipeiDate.toISOString().slice(0, 16);
+        } 
+        else {
+          result = '請輸入有效的時間！';
+        }
+
+        resultBox.textContent = result;
+      } 
+      catch(error) {
+        console.error("時間轉換錯誤:", error);
+        resultBox.textContent = '時間格式錯誤，請檢查輸入！';
+      }
+    }
+  </script>
+</body>
+</html>
